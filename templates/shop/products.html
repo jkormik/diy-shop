@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Наши товары | Handmade Soul{% endblock %}
+
+{% block content %}
+<section class="py-20 max-w-7xl mx-auto px-4">
+    <div class="text-center mb-16">
+        <h1 class="text-5xl font-serif text-stone-800 mb-4">Наши товары</h1>
+        <p class="text-stone-600 max-w-2xl mx-auto">Уникальные изделия ручной работы, созданные с любовью для вашего вдохновения.</p>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="flex flex-wrap justify-center gap-3 mb-12">
+        <a href="{% url 'product_list' %}" class="px-6 py-2 rounded-full text-sm font-medium transition-all {% if not request.GET.category %}bg-stone-800 text-white{% else %}bg-white text-stone-600 border border-stone-200 hover:bg-stone-100{% endif %}">
+            Все товары
+        </a>
+        {% for category in categories %}
+        <a href="{% url 'product_list' %}?category={{ category.slug }}" class="px-6 py-2 rounded-full text-sm font-medium transition-all {% if request.GET.category == category.slug %}bg-stone-800 text-white{% else %}bg-white text-stone-600 border border-stone-200 hover:bg-stone-100{% endif %}">
+            {{ category.name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Product Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        {% for product in products %}
+        <div class="group">
+            <a href="{% url 'product_detail' product.slug %}" class="block">
+                <div class="aspect-[4/5] overflow-hidden rounded-2xl relative mb-4">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    <button onclick="event.preventDefault(); event.stopPropagation(); toggleFavorite({{ product.id }}, this)" class="absolute top-4 right-4 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center {% if product.id in favorite_products %}text-red-500{% else %}text-stone-400{% endif %} hover:text-red-400 transition-colors">
+                        <i class="{% if product.id in favorite_products %}fa-solid{% else %}fa-regular{% endif %} fa-heart"></i>
+                    </button>
+                </div>
+            </a>
+            <div class="flex justify-between items-start px-1">
+                <div class="block">
+                    <a href="{% url 'product_detail' product.slug %}" class="block">
+                        <h3 class="font-medium text-stone-800 mb-1 hover:text-green-700 transition-colors">{{ product.name }}</h3>
+                        <span class="text-lg font-serif text-stone-600 hover:text-green-700 transition-colors cursor-pointer">{{ product.price }}₽</span>
+                    </a>
+                </div>
+                <button onclick="toggleCart({{ product.id }}, this)" 
+                class="px-4 py-2 rounded-full text-xs transition-colors {% if product.id in cart_products %}bg-stone-300 text-stone-600{% else %}bg-stone-800 text-white{% endif %}">
+    {% if product.id in cart_products %}Убрать из корзины{% else %}В корзину{% endif %}
+</button>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-20">
+            <p class="text-stone-500 text-xl">К сожалению, в этой категории пока нет товаров.</p>
+            <a href="{% url 'product_list' %}" class="mt-4 inline-block text-stone-800 underline">Вернуться ко всем товарам</a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Handmade Soul{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #F9F7F2;
+            color: #4A4A4A;
+            font-family: 'Georgia', serif;
+        }
+        .nav-link {
+            @apply text-sm font-medium hover:text-green-700 transition-colors duration-200;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="{% url 'index' %}" class="flex items-center space-x-2">
+                        <div class="w-10 h-10 bg-stone-200 rounded-full flex items-center justify-center">
+                            <span class="text-stone-600 font-bold">HS</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-xl font-serif font-bold text-stone-800 leading-none">Handmade Soul</span>
+                            <span class="text-xs text-stone-500">Вышивка • Рукоделие • Декор</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Main Menu -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="{% url 'index' %}" class="nav-link {% if request.resolver_match.url_name == 'index' %}text-green-700{% endif %}">Главная</a>
+                    <a href="{% url 'product_list' %}" class="nav-link {% if request.resolver_match.url_name == 'product_list' %}text-green-700{% endif %}">Товары</a>
+                    <a href="{% url 'search' %}" class="nav-link {% if request.resolver_match.url_name == 'search' %}text-green-700{% endif %}">Поиск <i class="fa-solid fa-magnifying-glass ml-1 text-xs"></i></a>
+                    <a href="{% url 'contacts' %}" class="nav-link {% if request.resolver_match.url_name == 'contacts' %}text-green-700{% endif %}">Контакты</a>
+                    <a href="{% url 'terms' %}" class="nav-link {% if request.resolver_match.url_name == 'terms' %}text-green-700{% endif %}">Условия</a>
+                </div>
+
+                <!-- Icons -->
+                <div class="flex items-center space-x-5">
+                    <a href="{% url 'favorites' %}" class="text-stone-600 hover:text-red-400 transition-colors">
+                        <i class="fa-regular fa-heart text-xl"></i>
+                    </a>
+                    <a href="{% url 'cart' %}" class="text-stone-600 hover:text-green-700 transition-colors relative">
+                        <i class="fa-solid fa-bag-shopping text-xl"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-stone-800 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                            {{ cart_count }}
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="cart-toast" class="fixed top-24 right-5 z-[100] transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="bg-stone-100 border border-stone-200 text-stone-800 px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3">
+            <i class="fa-solid fa-circle-check text-green-600"></i>
+            <span id="toast-message" class="text-sm font-medium">Товар добавлен в корзину</span>
+        </div>
+    </div>
+
+    <script>
+        async function toggleFavorite(productId, btnElement) {
+            try {
+                const response = await fetch(`/favorites/toggle/${productId}/`);
+                if (response.status === 403 || response.redirected) {
+                    window.location.href = '/accounts/login/'; // Or your login URL
+                    return;
+                }
+                const data = await response.json();
+                if (data.status === 'added') {
+                    btnElement.classList.remove('text-stone-400');
+                    btnElement.classList.add('text-red-500');
+                    btnElement.querySelector('i').classList.replace('fa-regular', 'fa-solid');
+                } else {
+                    btnElement.classList.remove('text-red-500');
+                    btnElement.classList.add('text-stone-400');
+                    btnElement.querySelector('i').classList.replace('fa-solid', 'fa-regular');
+                    
+                    // If we are on the favorites page, remove the product card
+                    const productCard = btnElement.closest('.bg-white');
+                    if (productCard && window.location.pathname.includes('/favorites/')) {
+                        productCard.classList.add('opacity-0', 'scale-95', 'transition-all', 'duration-300');
+                        setTimeout(() => productCard.remove(), 300);
+                    }
+                }
+            } catch (error) {
+                console.error('Error toggling favorite:', error);
+            }
+        }
+
+        async function toggleCart(productId, btnElement) {
+            try {
+                const response = await fetch(`/cart/toggle/${productId}/`);
+                if (response.ok) {
+                    const data = await response.json();
+                    showToast(data.message);
+                    
+                    // Update cart counter
+                    const countElement = document.getElementById('cart-count');
+                    if (countElement) {
+                        countElement.textContent = data.total_count;
+                    }
+                    
+                    // Update button text and style
+                    if (data.status === 'added') {
+                        btnElement.textContent = 'Убрать из корзины';
+                        btnElement.classList.replace('bg-stone-800', 'bg-stone-300');
+                        btnElement.classList.replace('text-white', 'text-stone-600');
+                    } else {
+                        btnElement.textContent = 'В корзину';
+                        btnElement.classList.replace('bg-stone-300', 'bg-stone-800');
+                        btnElement.classList.replace('text-stone-600', 'text-white');
+                    }
+                } else {
+                    console.error('Failed to toggle cart');
+                }
+            } catch (error) {
+                console.error('Error toggling cart:', error);
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('cart-toast');
+            const msgElement = document.getElementById('toast-message');
+            
+            msgElement.textContent = message;
+            toast.classList.remove('translate-x-full');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 1000);
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-100 py-12 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
+                <div class="flex flex-col items-center md:items-start">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <div class="w-8 h-8 bg-stone-200 rounded-full flex items-center justify-center">
+                            <span class="text-stone-600 font-bold text-xs">HS</span>
+                        </div>
+                        <span class="text-lg font-serif font-bold text-stone-800">Handmade Soul</span>
+                    </div>
+                    <span class="text-sm text-stone-500">Ручная работа с душой</span>
+                </div>
+                
+                <div class="flex justify-center space-x-6">
+                    <a href="{% url 'index' %}" class="nav-link">Главная</a>
+                    <a href="{% url 'product_list' %}" class="nav-link">Товары</a>
+                    <a href="{% url 'search' %}" class="nav-link">Поиск</a>
+                    <a href="{% url 'contacts' %}" class="nav-link">Контакты</a>
+                    <a href="{% url 'terms' %}" class="nav-link">Условия</a>
+                </div>
+
+                <div class="flex justify-center md:justify-end space-x-4">
+                    <a href="#" class="text-stone-400 hover:text-stone-600 transition-colors"><i class="fa-brands fa-instagram text-2xl"></i></a>
+                    <a href="#" class="text-stone-400 hover:text-stone-600 transition-colors"><i class="fa-brands fa-pinterest text-2xl"></i></a>
+                    <span class="text-sm text-stone-400 ml-4 italic">С любовью к ручной работе ♡</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

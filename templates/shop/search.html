@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Поиск | Handmade Soul{% endblock %}
+
+{% block content %}
+<section class="pt-20 pb-12 bg-stone-100">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-serif text-stone-800 mb-4">Поиск</h1>
+            <p class="text-stone-600">Найдите то, что вдохновляет</p>
+        </div>
+
+<!-- Search Area -->
+        <form method="GET" action="{% url 'search' %}" id="search-form">
+            <!-- Search Bar -->
+            <div class="max-w-3xl mx-auto mb-16 flex gap-2">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"></i>
+                    <input type="text" name="q" value="{{ query }}" placeholder="Поиск по товарам..." class="w-full pl-12 pr-4 py-4 bg-white rounded-full border-none shadow-sm focus:ring-2 focus:ring-stone-200 outline-none">
+                </div>
+                <button type="submit" class="px-10 py-4 bg-stone-800 text-white rounded-full hover:bg-stone-700 transition-all">
+                    Найти
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+                <!-- Filters Sidebar -->
+                <aside class="space-y-10">
+                    <!-- Categories -->
+                    <div>
+                        <h3 class="text-lg font-serif text-stone-800 mb-4 border-b border-stone-200 pb-2">Категории</h3>
+                        <div class="space-y-2">
+                            {% for category in categories %}
+                            <label class="flex items-center space-x-3 cursor-pointer group">
+                                <input type="checkbox" name="category" value="{{ category.slug }}" {% if category.slug in active_categories %}checked{% endif %} class="filter-input w-4 h-4 text-stone-800 rounded border-gray-300 focus:ring-stone-500">
+                                <span class="text-sm text-stone-600 group-hover:text-stone-800 transition-colors">{{ category.name }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Sorting -->
+                    <div>
+                        <h3 class="text-lg font-serif text-stone-800 mb-4 border-b border-stone-200 pb-2">Сортировка</h3>
+                        <select name="sort" class="filter-input w-full px-3 py-2 bg-white border border-stone-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-stone-200">
+                            <option value="" {% if not current_sort %}selected{% endif %}>По умолчанию</option>
+                            <option value="price_asc" {% if current_sort == 'price_asc' %}selected{% endif %}>Сначала дешевые</option>
+                            <option value="price_desc" {% if current_sort == 'price_desc' %}selected{% endif %}>Сначала дорогие</option>
+                        </select>
+                    </div>
+
+                    <a href="{% url 'search' %}" class="inline-flex items-center text-sm text-stone-500 hover:text-stone-800 transition-colors">
+                        <i class="fa-solid fa-rotate-left mr-2"></i> Сбросить фильтры
+                    </a>
+                </aside>
+
+                <!-- Search Results -->
+                <div class="lg:col-span-3">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-2xl font-serif text-stone-800">
+                            Результаты поиска: <span class="text-stone-500">«{{ query|default:"все товары" }}»</span>
+                        </h2>
+                        <span class="text-sm text-stone-400">Найдено: {{ products.count }} товаров</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {% for product in products %}
+                        <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+                            <a href="{% url 'product_detail' product.slug %}" class="block">
+                                <div class="aspect-[4/5] overflow-hidden relative group">
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                    <button onclick="event.preventDefault(); event.stopPropagation(); toggleFavorite({{ product.id }}, this)" class="absolute top-4 right-4 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center {% if product.id in favorite_products %}text-red-500{% else %}text-stone-400{% endif %} hover:text-red-400 transition-colors">
+                                        <i class="{% if product.id in favorite_products %}fa-solid{% else %}fa-regular{% endif %} fa-heart"></i>
+                                    </button>
+                                </div>
+                            </a>
+                            <div class="p-5">
+                                <a href="{% url 'product_detail' product.slug %}" class="block">
+                                    <h3 class="font-medium text-stone-800 mb-1 hover:text-green-700 transition-colors">{{ product.name }}</h3>
+                                </a>
+                                <div class="flex justify-between items-center">
+                                    <a href="{% url 'product_detail' product.slug %}" class="text-lg font-serif text-stone-600 hover:text-green-700 transition-colors">₽{{ product.price }}</a>
+                                    <button onclick="toggleCart({{ product.id }}, this)" 
+                                            class="px-4 py-2 rounded-full text-xs transition-colors {% if product.id in cart_products %}bg-stone-300 text-stone-600{% else %}bg-stone-800 text-white{% endif %}">
+                                        {% if product.id in cart_products %}Убрать из корзины{% else %}В корзину{% endif %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-span-full text-center py-20">
+                            <p class="text-stone-500 text-xl">Ничего не нашлось по вашему запросу.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script>
+    document.querySelectorAll('.filter-input').forEach(input => {
+        input.addEventListener('change', () => {
+            document.getElementById('search-form').submit();
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Корзина | Handmade Soul{% endblock %}
+
+{% block content %}
+<section class="py-20 max-w-7xl mx-auto px-4">
+    <h1 class="text-4xl font-serif text-stone-800 mb-12 text-center">Ваша корзина</h1>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <!-- Cart Items -->
+        <div class="lg:col-span-2 space-y-6">
+            {% if cart_items %}
+            <div class="bg-white rounded-3xl shadow-sm overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-stone-50 text-stone-500 text-sm uppercase font-medium">
+                        <tr class="border-b border-stone-100">
+                            <th class="px-6 py-4">Товар</th>
+                            <th class="px-6 py-4 text-right">Цена</th>
+                            <th class="px-6 py-4 text-right">Итого</th>
+                            <th class="px-6 py-4 text-center">Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-stone-100">
+                        {% for item in cart_items %}
+                        <tr class="hover:bg-stone-50 transition-colors">
+                            <td class="px-6 py-4 flex items-center space-x-4">
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-16 h-16 object-cover rounded-lg">
+                                <span class="font-medium text-stone-800">{{ item.product.name }}</span>
+                            </td>
+                            <td class="px-6 py-4 text-right text-stone-600">
+                                ₽{{ item.product.price }}
+                            </td>
+                            <td class="px-6 py-4 text-right font-medium text-stone-800">
+                                ₽{{ item.get_total_price }}
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <a href="{% url 'remove_from_cart' item.id %}" class="text-stone-300 hover:text-red-500 transition-colors" title="Удалить">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex justify-end">
+                <a href="{% url 'clear_cart' %}" class="text-sm text-stone-400 hover:text-red-500 transition-colors flex items-center">
+                    <i class="fa-solid fa-rotate-left mr-2"></i> Очистить всю корзину
+                </a>
+            </div>
+            {% else %}
+            <div class="bg-white rounded-3xl p-8 shadow-sm text-center">
+                <i class="fa-solid fa-bag-shopping text-6xl text-stone-200 mb-4"></i>
+                <p class="text-stone-500 text-lg mb-8">Ваша корзина пока пуста</p>
+                <a href="{% url 'product_list' %}" class="px-8 py-3 bg-stone-800 text-white rounded-full hover:bg-stone-700 transition-all">
+                    Перейти в каталог
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Order Summary -->
+        <div class="bg-white p-8 rounded-3xl shadow-sm h-fit">
+            <h2 class="text-2xl font-serif text-stone-800 mb-6">Итого</h2>
+            <div class="flex justify-between mb-4">
+                <span class="text-stone-500">Товары</span>
+                <span class="font-medium text-stone-800">₽{{ total_price }}</span>
+            </div>
+            <div class="flex justify-between mb-6">
+                <span class="text-stone-500">Доставка</span>
+                <span class="text-green-600 font-medium">Бесплатно</span>
+            </div>
+            <div class="border-t border-stone-100 pt-6 mb-8 flex justify-between items-center">
+                <span class="text-lg font-serif text-stone-800">Всего</span>
+                <span class="text-2xl font-serif font-bold text-stone-800">₽{{ total_price }}</span>
+            </div>
+            <a href="/checkout/" class="block text-center w-full py-4 bg-stone-800 text-white rounded-full hover:bg-stone-700 transition-all {% if not cart_items %}pointer-events-none opacity-50{% endif %}">
+                Оформить заказ
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
