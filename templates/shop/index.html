@@ -31,35 +31,35 @@
 </section>
 
 <!-- Features -->
-<section class="py-16 border-y border-stone-200 bg-white">
-    <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-around gap-8 text-stone-600 font-medium">
-        <div class="flex items-center space-x-3">
-            <i class="fa-solid fa-leaf text-stone-400"></i>
-            <span>100% ручная работа</span>
+<section class="py-24 bg-[#F5F5F4] border-y border-stone-200">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+        <div class="flex flex-col items-center space-y-4">
+            <i class="fa-solid fa-leaf text-stone-800 text-2xl"></i>
+            <span class="text-sm uppercase tracking-widest font-bold text-stone-800">100% ручная работа</span>
         </div>
-        <div class="flex items-center space-x-3">
-            <i class="fa-regular fa-heart text-stone-400"></i>
-            <span>Сделано с любовью</span>
+        <div class="flex flex-col items-center space-y-4">
+            <i class="fa-regular fa-heart text-stone-800 text-2xl"></i>
+            <span class="text-sm uppercase tracking-widest font-bold text-stone-800">Сделано с любовью</span>
         </div>
-        <div class="flex items-center space-x-3">
-            <i class="fa-solid fa-gift text-stone-400"></i>
-            <span>Идеальный подарок</span>
+        <div class="flex flex-col items-center space-y-4">
+            <i class="fa-solid fa-gift text-stone-800 text-2xl"></i>
+            <span class="text-sm uppercase tracking-widest font-bold text-stone-800">Идеальный подарок</span>
         </div>
     </div>
 </section>
 
 <!-- Categories -->
-<section class="py-20 max-w-7xl mx-auto px-4">
-    <h2 class="text-3xl font-serif text-center text-stone-800 mb-12">Категории</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<section class="py-24 max-w-7xl mx-auto px-4">
+    <h2 class="text-4xl font-serif text-center text-stone-800 mb-16">Категории</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {% for category in categories %}
         <a href="{% url 'product_list' %}?category={{ category.slug }}" class="group block">
-            <div class="aspect-square overflow-hidden rounded-xl mb-4 relative">
-                <img src="{% if category.image %}{{ category.image.url }}{% else %}https://images.unsplash.com/photo-1513519245086-b5939715777a?q=80&w=500{% endif %}" alt="{{ category.name }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
+            <div class="aspect-square overflow-hidden rounded-3xl mb-6 relative shadow-sm">
+                <img src="{% if category.image %}{{ category.image.url }}{% else %}https://images.unsplash.com/photo-1513519245086-b5939715777a?q=80&w=500{% endif %}" alt="{{ category.name }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                <div class="absolute inset-0 bg-stone-900 opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
             </div>
             <div class="flex justify-between items-center px-1">
-                <span class="font-medium text-stone-700 group-hover:text-stone-900 transition-colors">{{ category.name }}</span>
+                <span class="text-lg font-medium text-stone-800 group-hover:text-green-700 transition-colors">{{ category.name }}</span>
                 <span class="text-stone-400 group-hover:text-stone-800 transition-colors">
                     <i class="fa-solid fa-arrow-right text-sm"></i>
                 </span>
@@ -75,23 +75,23 @@
         <h2 class="text-3xl font-serif text-center text-stone-800 mb-12">Наши работы</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {% for product in featured_products %}
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div class="bg-white rounded-3xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all duration-500 hover:-translate-y-1">
                 <a href="{% url 'product_detail' product.slug %}" class="block">
                     <div class="aspect-[4/5] overflow-hidden relative group">
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                         <button onclick="event.preventDefault(); event.stopPropagation(); toggleFavorite({{ product.id }}, this)" aria-label="Добавить в избранное" class="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center {% if product.id in favorite_products %}text-red-500{% else %}text-stone-400{% endif %} hover:text-red-400 transition-colors">
                             <i class="{% if product.id in favorite_products %}fa-solid{% else %}fa-regular{% endif %} fa-heart"></i>
                         </button>
                     </div>
                 </a>
-                <div class="p-5">
+                <div class="p-6">
                     <a href="{% url 'product_detail' product.slug %}" class="block">
-                        <h3 class="font-medium text-stone-800 mb-1 hover:text-green-700 transition-colors">{{ product.name }}</h3>
+                        <h3 class="font-medium text-stone-800 mb-2 hover:text-green-700 transition-colors">{{ product.name }}</h3>
                     </a>
                     <div class="flex justify-between items-center">
                         <a href="{% url 'product_detail' product.slug %}" class="text-lg font-serif text-stone-600 hover:text-green-700 transition-colors">₽{{ product.price }}</a>
                         <button onclick="toggleCart({{ product.id }}, this)" 
-                                class="px-4 py-2 rounded-full text-xs transition-colors {% if product.id in cart_products %}bg-stone-300 text-stone-600{% else %}bg-stone-800 text-white{% endif %}">
+                                class="px-4 py-2 rounded-full text-xs transition-all duration-300 hover:-translate-y-0.5 {% if product.id in cart_products %}bg-stone-300 text-stone-600{% else %}bg-stone-800 text-white hover:bg-stone-700{% endif %}">
                             {% if product.id in cart_products %}Убрать из корзины{% else %}В корзину{% endif %}
                         </button>
                     </div>
@@ -136,14 +136,14 @@
 </section>
 
 <!-- Newsletter -->
-<section class="py-20 bg-white border-t border-stone-100">
+<section class="py-24 bg-stone-800 text-white">
     <div class="max-w-4xl mx-auto px-4 text-center">
-        <h3 class="text-2xl font-serif text-stone-800 mb-4">Будьте в курсе новинок</h3>
-        <p class="text-stone-500 mb-8">Подпишитесь на нашу рассылку, чтобы первыми узнавать о новых коллекциях</p>
+        <h3 class="text-3xl font-serif text-white mb-4">Будьте в курсе новинок</h3>
+        <p class="text-stone-300 mb-10 text-lg">Подпишитесь на нашу рассылку, чтобы первыми узнавать о новых коллекциях и историях создания.</p>
         <form class="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <label for="newsletter-email" class="sr-only">Ваш e-mail</label>
-            <input type="email" id="newsletter-email" placeholder="Ваш e-mail" class="w-full sm:w-80 px-6 py-3 bg-stone-100 border-transparent rounded-full focus:bg-white focus:ring-2 focus:ring-stone-200 transition-all outline-none">
-            <button class="w-full sm:w-auto px-8 py-3 bg-stone-800 text-white rounded-full hover:bg-stone-700 transition-all">
+            <input type="email" id="newsletter-email" placeholder="Ваш e-mail" class="w-full sm:w-80 px-6 py-4 bg-white/10 border border-white/20 text-white placeholder-stone-400 rounded-full focus:bg-white/20 focus:ring-2 focus:ring-white/30 transition-all outline-none">
+            <button class="w-full sm:w-auto px-8 py-4 bg-white text-stone-800 rounded-full hover:bg-stone-100 transition-all font-medium">
                 Подписаться
             </button>
         </form>

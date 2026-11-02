@@ -6,22 +6,22 @@
 <section class="py-20 max-w-7xl mx-auto px-4">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
         <!-- Product Images -->
-        <div class="space-y-4">
-            <div class="aspect-[4/5] overflow-hidden rounded-3xl bg-stone-200">
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+        <div class="space-y-6">
+            <div class="aspect-[4/5] overflow-hidden rounded-3xl bg-stone-200 shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" class="w-full h-full object-cover">
             </div>
             <div class="grid grid-cols-4 gap-4">
-                <div class="aspect-square rounded-xl bg-stone-200 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
-                    <img src="{{ product.image.url }}" alt="view 1" class="w-full h-full object-cover">
+                <div class="aspect-square rounded-2xl bg-stone-200 overflow-hidden cursor-pointer hover:opacity-80 transition-all duration-300 hover:-translate-y-1 shadow-sm">
+                    <img src="{{ product.image.url }}" alt="view 1" loading="lazy" class="w-full h-full object-cover">
                 </div>
-                <div class="aspect-square rounded-xl bg-stone-200 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
-                    <img src="{{ product.image.url }}" alt="view 2" class="w-full h-full object-cover">
+                <div class="aspect-square rounded-2xl bg-stone-200 overflow-hidden cursor-pointer hover:opacity-80 transition-all duration-300 hover:-translate-y-1 shadow-sm">
+                    <img src="{{ product.image.url }}" alt="view 2" loading="lazy" class="w-full h-full object-cover">
                 </div>
-                <div class="aspect-square rounded-xl bg-stone-200 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
-                    <img src="{{ product.image.url }}" alt="view 3" class="w-full h-full object-cover">
+                <div class="aspect-square rounded-2xl bg-stone-200 overflow-hidden cursor-pointer hover:opacity-80 transition-all duration-300 hover:-translate-y-1 shadow-sm">
+                    <img src="{{ product.image.url }}" alt="view 3" loading="lazy" class="w-full h-full object-cover">
                 </div>
-                <div class="aspect-square rounded-xl bg-stone-200 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
-                    <img src="{{ product.image.url }}" alt="view 4" class="w-full h-full object-cover">
+                <div class="aspect-square rounded-2xl bg-stone-200 overflow-hidden cursor-pointer hover:opacity-80 transition-all duration-300 hover:-translate-y-1 shadow-sm">
+                    <img src="{{ product.image.url }}" alt="view 4" loading="lazy" class="w-full h-full object-cover">
                 </div>
             </div>
         </div>
@@ -45,7 +45,7 @@
                 <!-- Actions -->
                 <div class="flex gap-4 pt-8">
                     <button onclick="toggleCart({{ product.id }}, this)" 
-                            class="flex-1 inline-flex justify-center items-center px-8 py-4 rounded-full transition-all font-medium {% if product.id in cart_products %}bg-stone-300 text-stone-600{% else %}bg-stone-800 text-white{% endif %}">
+                            class="flex-1 inline-flex justify-center items-center px-8 py-4 rounded-full transition-all duration-300 font-medium hover:-translate-y-0.5 {% if product.id in cart_products %}bg-stone-300 text-stone-600{% else %}bg-stone-800 text-white hover:bg-stone-700{% endif %}">
                         {% if product.id in cart_products %}Убрать из корзины{% else %}Добавить в корзину{% endif %}
                     </button>
                     <button onclick="toggleFavorite({{ product.id }}, this)" class="w-14 h-14 flex items-center justify-center rounded-full border border-stone-200 {% if product.id in favorite_products %}text-red-500 border-red-200{% else %}text-stone-400 hover:text-red-400 hover:border-red-200{% endif %} transition-all">

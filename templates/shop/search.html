@@ -3,7 +3,7 @@
 {% block title %}Поиск | Handmade Soul{% endblock %}
 
 {% block content %}
-<section class="pt-20 pb-12 bg-stone-100">
+<section class="pt-20 pb-12 bg-[#F5F5F4]">
     <div class="max-w-7xl mx-auto px-4">
         <div class="text-center mb-12">
             <h1 class="text-5xl font-serif text-stone-800 mb-4">Поиск</h1>
@@ -13,12 +13,13 @@
 <!-- Search Area -->
         <form method="GET" action="{% url 'search' %}" id="search-form">
             <!-- Search Bar -->
-            <div class="max-w-3xl mx-auto mb-16 flex gap-2">
+            <div class="max-w-3xl mx-auto mb-16 flex gap-3">
                 <div class="relative flex-1">
+                    <label for="search-query" class="sr-only">Поиск по товарам</label>
                     <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                    <input type="text" name="q" value="{{ query }}" placeholder="Поиск по товарам..." class="w-full pl-12 pr-4 py-4 bg-white rounded-full border-none shadow-sm focus:ring-2 focus:ring-stone-200 outline-none">
+                    <input type="text" id="search-query" name="q" value="{{ query }}" placeholder="Поиск по товарам..." class="w-full pl-12 pr-4 py-4 bg-white rounded-full border-none shadow-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all">
                 </div>
-                <button type="submit" class="px-10 py-4 bg-stone-800 text-white rounded-full hover:bg-stone-700 transition-all">
+                <button type="submit" class="px-10 py-4 bg-stone-800 text-white rounded-full hover:bg-stone-700 transition-all duration-300 hover:-translate-y-0.5">
                     Найти
                 </button>
             </div>
@@ -65,23 +66,23 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {% for product in products %}
-                        <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+                        <div class="bg-white rounded-3xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all duration-500 hover:-translate-y-1 group">
                             <a href="{% url 'product_detail' product.slug %}" class="block">
-                                <div class="aspect-[4/5] overflow-hidden relative group">
-                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                                    <button onclick="event.preventDefault(); event.stopPropagation(); toggleFavorite({{ product.id }}, this)" class="absolute top-4 right-4 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center {% if product.id in favorite_products %}text-red-500{% else %}text-stone-400{% endif %} hover:text-red-400 transition-colors">
+                                <div class="aspect-[4/5] overflow-hidden relative">
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                                    <button onclick="event.preventDefault(); event.stopPropagation(); toggleFavorite({{ product.id }}, this)" aria-label="Добавить в избранное" class="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center {% if product.id in favorite_products %}text-red-500{% else %}text-stone-400{% endif %} hover:text-red-400 transition-colors">
                                         <i class="{% if product.id in favorite_products %}fa-solid{% else %}fa-regular{% endif %} fa-heart"></i>
                                     </button>
                                 </div>
                             </a>
-                            <div class="p-5">
+                            <div class="p-6">
                                 <a href="{% url 'product_detail' product.slug %}" class="block">
                                     <h3 class="font-medium text-stone-800 mb-1 hover:text-green-700 transition-colors">{{ product.name }}</h3>
                                 </a>
                                 <div class="flex justify-between items-center">
                                     <a href="{% url 'product_detail' product.slug %}" class="text-lg font-serif text-stone-600 hover:text-green-700 transition-colors">₽{{ product.price }}</a>
                                     <button onclick="toggleCart({{ product.id }}, this)" 
-                                            class="px-4 py-2 rounded-full text-xs transition-colors {% if product.id in cart_products %}bg-stone-300 text-stone-600{% else %}bg-stone-800 text-white{% endif %}">
+                                            class="px-4 py-2 rounded-full text-xs transition-all duration-300 hover:-translate-y-0.5 {% if product.id in cart_products %}bg-stone-300 text-stone-600{% else %}bg-stone-800 text-white hover:bg-stone-700{% endif %}">
                                         {% if product.id in cart_products %}Убрать из корзины{% else %}В корзину{% endif %}
                                     </button>
                                 </div>

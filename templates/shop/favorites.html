@@ -8,19 +8,19 @@
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {% for favorite in favorites %}
-        <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-            <div class="aspect-[4/5] overflow-hidden relative group">
-                <img src="{{ favorite.product.image.url }}" alt="{{ favorite.product.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                <button onclick="toggleFavorite({{ favorite.product.id }}, this)" class="absolute top-4 right-4 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-red-500">
+        <div class="bg-white rounded-3xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all duration-500 hover:-translate-y-1 group">
+            <div class="aspect-[4/5] overflow-hidden relative">
+                <img src="{{ favorite.product.image.url }}" alt="{{ favorite.product.name }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                <button onclick="toggleFavorite({{ favorite.product.id }}, this)" aria-label="Удалить из избранного" class="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-red-500">
                     <i class="fa-solid fa-heart"></i>
                 </button>
             </div>
-            <div class="p-5">
+            <div class="p-6">
                 <h3 class="font-medium text-stone-800 mb-1">{{ favorite.product.name }}</h3>
                 <div class="flex justify-between items-center">
                     <span class="text-lg font-serif text-stone-600">₽{{ favorite.product.price }}</span>
                     <button onclick="toggleCart({{ favorite.product.id }}, this)" 
-                            class="px-4 py-2 rounded-full text-xs transition-colors {% if favorite.product.id in cart_products %}bg-stone-300 text-stone-600{% else %}bg-stone-800 text-white{% endif %}">
+                            class="px-4 py-2 rounded-full text-xs transition-all duration-300 hover:-translate-y-0.5 {% if favorite.product.id in cart_products %}bg-stone-300 text-stone-600{% else %}bg-stone-800 text-white hover:bg-stone-700{% endif %}">
                         {% if favorite.product.id in cart_products %}Убрать из корзины{% else %}В корзину{% endif %}
                     </button>
                 </div>
