@@ -3,6 +3,7 @@ from django.conf import settings
 
 def cart_count(request):
     count = 0
+    cart = None
     cart_products = []
     favorite_products = []
     if request.user.is_authenticated:
